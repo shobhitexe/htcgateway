@@ -90,11 +90,6 @@ async function CheckForAlreadyCreatedAccount(
     }
   );
 
-  if (!checkAccountRequest.ok) {
-    console.error("Failed to check account:", await checkAccountRequest.text());
-    return "";
-  }
-
   const checkAccountData = await checkAccountRequest.json();
   if (checkAccountData.uuid) {
     return checkAccountData.uuid;
