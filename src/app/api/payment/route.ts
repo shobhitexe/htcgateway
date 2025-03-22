@@ -1,4 +1,5 @@
 import { RevolutSecretKey, RevolutURL } from "@/lib/env";
+import { NextRequest, NextResponse } from "next/server";
 
 const config: Record<string, string>[] = [
   {
@@ -21,52 +22,63 @@ const config: Record<string, string>[] = [
   },
 ];
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const { event, order_id } = await req.json();
 
     if (event === "ORDER_COMPLETED") {
-      try {
-        const res = await fetch(`${RevolutURL}/api/orders/${order_id}`, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${RevolutSecretKey}`,
-            "Revolut-Api-Version": "2024-09-01",
-          },
-        });
+      const res = await fetch(`${RevolutURL}/api/orders/${order_id}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${RevolutSecretKey}`,
+          "Revolut-Api-Version": "2024-09-01",
+        },
+      });
 
-        const data: { metadata: CheckoutData } = await res.json();
-
-        const accountUUID = await CheckForAlreadyCreatedAccount(
-          data.metadata.email,
-          process.env.DEFAULT_PASS as string,
-          data.metadata.firstName,
-          data.metadata.lastName
-        );
-
-        if (accountUUID !== "") {
-          const res = await CreateNewTradingAccount(
-            accountUUID,
-            config[Number(data.metadata.step)][data.metadata.account],
-            data.metadata.firstName + data.metadata.lastName
-          );
-
-          console.log(res);
-        } else {
-          return Response.json({ success: false }, { status: 500 });
-        }
-      } catch (error) {
-        console.log(error);
-        return Response.json({ success: false }, { status: 500 });
+      if (!res.ok) {
+        console.error("Failed to fetch order details", await res.text());
+        return NextResponse.json({ success: false }, { status: res.status });
       }
+
+      const data: { metadata: CheckoutData } = await res.json();
+
+      const accountUUID = await CheckForAlreadyCreatedAccount(
+        data.metadata.email,
+        process.env.DEFAULT_PASS as string,
+        data.metadata.firstName,
+        data.metadata.lastName
+      );
+
+      if (!accountUUID) {
+        return NextResponse.json({ success: false }, { status: 500 });
+      }
+
+      const stepIndex = Number(data.metadata.step);
+      if (stepIndex < 0 || stepIndex >= config.length) {
+        console.error("Invalid step index:", stepIndex);
+        return NextResponse.json({ success: false }, { status: 400 });
+      }
+
+      const challengeUUID = config[stepIndex]?.[data.metadata.account];
+      if (!challengeUUID) {
+        console.error("Invalid account value:", data.metadata.account);
+        return NextResponse.json({ success: false }, { status: 400 });
+      }
+
+      const tradingAccountRes = await CreateNewTradingAccount(
+        accountUUID,
+        challengeUUID,
+        `${data.metadata.firstName} ${data.metadata.lastName}`
+      );
+
+      return NextResponse.json(tradingAccountRes);
     }
 
-    return Response.json({ success: true }, { status: 200 });
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.log(error);
-
-    return Response.json({ success: false }, { status: 500 });
+    console.error("Unexpected error:", error);
+    return NextResponse.json({ success: false }, { status: 500 });
   }
 }
 
@@ -83,9 +95,13 @@ async function CheckForAlreadyCreatedAccount(
     }
   );
 
-  const checkAccountData = await checkAccountRequest.json();
+  if (!checkAccountRequest.ok) {
+    console.error("Failed to check account:", await checkAccountRequest.text());
+    return "";
+  }
 
-  if (checkAccountData.uuid !== "" && checkAccountData.uuid !== undefined) {
+  const checkAccountData = await checkAccountRequest.json();
+  if (checkAccountData.uuid) {
     return checkAccountData.uuid;
   }
 
@@ -98,8 +114,8 @@ async function CheckForAlreadyCreatedAccount(
         Authorization: process.env.MATCHTRADER_KEY || "",
       },
       body: JSON.stringify({
-        email: email,
-        password: password,
+        email,
+        password,
         personalDetails: {
           firstname: firstName,
           lastname: lastName,
@@ -109,8 +125,12 @@ async function CheckForAlreadyCreatedAccount(
     }
   );
 
-  const data = await res.json();
+  if (!res.ok) {
+    console.error("Failed to create account:", await res.text());
+    return "";
+  }
 
+  const data = await res.json();
   return data.uuid;
 }
 
@@ -130,12 +150,15 @@ async function CreateNewTradingAccount(
       body: JSON.stringify({
         challengeId: challengeUUID,
         accountUuid: accUUID,
-        name: name,
+        name,
       }),
     }
   );
 
-  const data = await res.json();
+  if (!res.ok) {
+    console.error("Failed to create trading account:", await res.text());
+    return { success: false };
+  }
 
-  return data;
+  return await res.json();
 }
