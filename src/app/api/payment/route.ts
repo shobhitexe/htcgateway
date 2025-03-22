@@ -36,11 +36,6 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      if (!res.ok) {
-        console.error("Failed to fetch order details", await res.text());
-        return NextResponse.json({ success: false }, { status: res.status });
-      }
-
       const data: { metadata: CheckoutData } = await res.json();
 
       const accountUUID = await CheckForAlreadyCreatedAccount(
@@ -91,6 +86,7 @@ async function CheckForAlreadyCreatedAccount(
   const checkAccountRequest = await fetch(
     `https://broker-api-prop.match-trade.com/v1/accounts/by-email/${email}`,
     {
+      method: "POST",
       headers: { Authorization: process.env.MATCHTRADER_KEY || "" },
     }
   );
@@ -108,7 +104,7 @@ async function CheckForAlreadyCreatedAccount(
   const res = await fetch(
     `https://broker-api-prop.match-trade.com/v1/accounts`,
     {
-      method: "POST",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: process.env.MATCHTRADER_KEY || "",
@@ -124,11 +120,6 @@ async function CheckForAlreadyCreatedAccount(
       }),
     }
   );
-
-  if (!res.ok) {
-    console.error("Failed to create account:", await res.text());
-    return "";
-  }
 
   const data = await res.json();
   return data.uuid;
@@ -154,11 +145,6 @@ async function CreateNewTradingAccount(
       }),
     }
   );
-
-  if (!res.ok) {
-    console.error("Failed to create trading account:", await res.text());
-    return { success: false };
-  }
 
   return await res.json();
 }
