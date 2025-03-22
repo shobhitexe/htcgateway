@@ -86,7 +86,6 @@ async function CheckForAlreadyCreatedAccount(
   const checkAccountRequest = await fetch(
     `https://broker-api-prop.match-trade.com/v1/accounts/by-email/${email}`,
     {
-      method: "POST",
       headers: { Authorization: process.env.MATCHTRADER_KEY || "" },
     }
   );
