@@ -30,6 +30,7 @@ export async function CreateOrder(
       body: JSON.stringify({
         amount: price * 100,
         currency: "USD",
+        redirect_url: "https://heratradingcapital.com",
         metadata: {
           ...userData,
           step,

@@ -19,4 +19,5 @@ type CheckoutData = {
   step: string;
   account: string;
   price: number;
+  password: string;
 };

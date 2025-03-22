@@ -28,6 +28,7 @@ export default function CheckoutForm({
     country: "",
     postalCode: "",
     discountCode: "",
+    password: "",
   });
 
   const [discountApplied, setDiscountApplied] = useState(false);
@@ -42,11 +43,7 @@ export default function CheckoutForm({
     try {
       const res = await CreateOrder(userData, step, account, price);
 
-      if (res === "/") {
-        router.push(res);
-      } else {
-        window.open(res, "_blank");
-      }
+      router.push(res);
     } catch (error) {
       console.error("Revolut initialization failed:", error);
       alert("Failed to initialize Revolut Checkout.");
@@ -177,6 +174,23 @@ export default function CheckoutForm({
                 value={userData.postalCode}
                 onChange={handleChange}
                 required
+              />
+            </div>
+          </div>
+
+          <div className="flex items-end gap-5">
+            <div className="grid w-full items-center gap-1.5">
+              <Label htmlFor="password" className="text-white">
+                Password
+              </Label>
+              <Input
+                id="password"
+                name="password"
+                type="text"
+                value={userData.password}
+                onChange={handleChange}
+                required
+                minLength={6}
               />
             </div>
           </div>

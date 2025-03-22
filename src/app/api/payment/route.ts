@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
       const accountUUID = await CheckForAlreadyCreatedAccount(
         data.metadata.email,
-        process.env.DEFAULT_PASS as string,
+        data.metadata.password,
         data.metadata.firstName,
         data.metadata.lastName
       );
