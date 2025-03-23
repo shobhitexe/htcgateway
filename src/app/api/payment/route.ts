@@ -22,8 +22,21 @@ const config: Record<string, string>[] = [
   },
 ];
 
+const allowedIPs = [
+  "35.246.21.235",
+  "34.89.70.170",
+  "35.242.130.242",
+  "35.242.162.241",
+];
+
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0];
+
+    if (!ip || !allowedIPs.includes(ip)) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const { event, order_id } = await req.json();
 
     if (event === "ORDER_COMPLETED") {

@@ -41,7 +41,12 @@ export default function CheckoutForm({
 
   const initializeCheckout = async () => {
     try {
-      const res = await CreateOrder(userData, step, account, price);
+      const res = await CreateOrder(
+        userData,
+        step,
+        account,
+        Number(price) * (1 - discount / 100)
+      );
 
       router.push(res);
     } catch (error) {
@@ -53,7 +58,7 @@ export default function CheckoutForm({
   async function checkDiscountCode() {
     try {
       const res = await fetch(
-        `/api/v1/general/discount?code=${userData.discountCode.toUpperCase()}`,
+        `/api/discount?code=${userData.discountCode.toUpperCase()}`,
         {
           method: "GET",
         }
@@ -72,7 +77,7 @@ export default function CheckoutForm({
       //   title: "Discount code applied",
       //   description: `${_res.data.name}`,
       // });
-      setDiscount(_res.data.percentage || 0);
+      setDiscount(_res.percentage || 0);
       setDiscountApplied(true);
     } catch (error) {
       console.log(error);
