@@ -34,7 +34,7 @@ export default function RootLayout({
         <Image
           src={"/logo.png"}
           alt={"logo"}
-          className="mx-auto mt-4 sm:w-[15%] w-[40%]"
+          className="mx-auto mt-4 sm:w-[20%] w-[45%]"
           width={340}
           height={90}
         />
