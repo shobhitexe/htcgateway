@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import OfferStrip from "@/components/OfferStrip";
 import Image from "next/image";
-// import Script from "next/script";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,7 +43,7 @@ export default function RootLayout({
         {children}
       </body>
 
-      {/* <Script
+      <Script
         id="fb-pixel"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
@@ -58,7 +58,7 @@ export default function RootLayout({
           fbq('init', '1005604251515655');
           fbq('track', 'PageView');`,
         }}
-      ></Script> */}
+      ></Script>
     </html>
   );
 }
