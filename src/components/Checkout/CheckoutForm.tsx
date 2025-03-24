@@ -265,9 +265,7 @@ export default function CheckoutForm({
               <div>Total</div>
               <div
                 id="checkout-total"
-                data-meta-value={(Number(price) * (1 - discount / 100)).toFixed(
-                  2
-                )}
+                data-value={(Number(price) * (1 - discount / 100)).toFixed(2)}
               >
                 ${(Number(price) * (1 - discount / 100)).toFixed(2)}
               </div>
