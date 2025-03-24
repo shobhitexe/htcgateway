@@ -1,12 +1,18 @@
+"use client";
+
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
-export default async function page({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const { price } = await searchParams;
+export default function ThankYou() {
+  const params = useSearchParams();
+
+  const price = params.get("price");
+
+  useEffect(() => {
+    window.fbq("track", "Purchase", { currency: "USD", value: price });
+  }, [price]);
 
   return (
     <div className="flex flex-col items-center sm:mt-10 mt-5 gap-5 text-white">
