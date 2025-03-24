@@ -8,6 +8,13 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fbq: any;
+  }
+}
+
 export default function CheckoutForm({
   step,
   account,
@@ -47,6 +54,11 @@ export default function CheckoutForm({
         account,
         Number(price) * (1 - discount / 100)
       );
+
+      window.fbq("track", "InitiateCheckout", {
+        value: Number(price) * (1 - discount / 100),
+        currency: "USD",
+      });
 
       router.push(res);
     } catch (error) {
