@@ -1,9 +1,21 @@
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 
-export default function page() {
+export default async function page({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { price } = await searchParams;
+
   return (
-    <div className="flex flex-col items-center sm:mt-10 mt-5 gap-10 text-white">
+    <div className="flex flex-col items-center sm:mt-10 mt-5 gap-5 text-white">
+      {price && (
+        <h2 className="text-AmericanSilver font-ClashGroteskLight sm:text-xl text-base max-w-5xl font-semibold">
+          Your Have Paid: ${price}
+        </h2>
+      )}
+
       <div className="p-5 text-center">
         <h1 className="text-Apricot lg:text-6xl md:text-5xl sm:text-4xl text-3xl font-Kugile py-5 font-semibold">
           Thank You
