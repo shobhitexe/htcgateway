@@ -263,7 +263,14 @@ export default function CheckoutForm({
 
             <div className="flex items-center justify-between font-semibold">
               <div>Total</div>
-              <div>${(Number(price) * (1 - discount / 100)).toFixed(2)}</div>
+              <div
+                id="checkout-total"
+                data-meta-value={(Number(price) * (1 - discount / 100)).toFixed(
+                  2
+                )}
+              >
+                ${(Number(price) * (1 - discount / 100)).toFixed(2)}
+              </div>
             </div>
 
             <Button variant={"default"}>Place Order</Button>
