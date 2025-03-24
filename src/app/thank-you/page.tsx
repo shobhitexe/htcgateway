@@ -21,7 +21,7 @@ export default function ThankYou({
   const { price } = params;
 
   useEffect(() => {
-    if (window.fbq) {
+    if (window.fbq && price !== "" && price !== null && price !== undefined) {
       window.fbq("track", "Purchase", { currency: "USD", value: price });
     }
   }, [price]);
