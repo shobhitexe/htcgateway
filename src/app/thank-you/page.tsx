@@ -2,16 +2,28 @@
 
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 
-export default function ThankYou() {
-  const params = useSearchParams();
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fbq: any;
+  }
+}
 
-  const price = params.get("price");
+export default function ThankYou({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = use(searchParams);
+
+  const { price } = params;
 
   useEffect(() => {
-    window.fbq("track", "Purchase", { currency: "USD", value: price });
+    if (window.fbq) {
+      window.fbq("track", "Purchase", { currency: "USD", value: price });
+    }
   }, [price]);
 
   return (
