@@ -126,10 +126,12 @@ async function CheckForAlreadyCreatedAccount(
         personalDetails: {
           firstname: firstName,
           lastname: lastName,
-          citizenship: country,
         },
         contactDetails: {
           phoneNumber: phone,
+        },
+        addressDetails: {
+          country: country,
         },
         createAsDepositedAccount: true,
       }),
