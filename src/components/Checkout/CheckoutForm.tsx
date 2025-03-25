@@ -36,6 +36,7 @@ export default function CheckoutForm({
     postalCode: "",
     discountCode: "",
     password: "",
+    phone: "",
   });
 
   const [discountApplied, setDiscountApplied] = useState(false);
@@ -189,6 +190,21 @@ export default function CheckoutForm({
                 name="postalCode"
                 type="text"
                 value={userData.postalCode}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="flex items-end gap-5">
+            <div className="grid w-full items-center gap-1.5">
+              <Label htmlFor="phone" className="text-white">
+                Phone
+              </Label>
+              <Input
+                id="phone"
+                name="phone"
+                type="number"
                 onChange={handleChange}
                 required
               />

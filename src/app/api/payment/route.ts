@@ -55,7 +55,9 @@ export async function POST(req: NextRequest) {
         data.metadata.email,
         data.metadata.password,
         data.metadata.firstName,
-        data.metadata.lastName
+        data.metadata.lastName,
+        data.metadata.phone,
+        data.metadata.country
       );
 
       if (!accountUUID) {
@@ -94,7 +96,9 @@ async function CheckForAlreadyCreatedAccount(
   email: string,
   password: string,
   firstName: string,
-  lastName: string
+  lastName: string,
+  phone: string,
+  country: string
 ) {
   const checkAccountRequest = await fetch(
     `https://broker-api-prop.match-trade.com/v1/accounts/by-email/${email}`,
@@ -122,6 +126,10 @@ async function CheckForAlreadyCreatedAccount(
         personalDetails: {
           firstname: firstName,
           lastname: lastName,
+          citizenship: country,
+        },
+        contactDetails: {
+          phoneNumber: phone,
         },
         createAsDepositedAccount: true,
       }),

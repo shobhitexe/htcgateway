@@ -20,4 +20,5 @@ type CheckoutData = {
   account: string;
   price: number;
   password: string;
+  phone: string;
 };
